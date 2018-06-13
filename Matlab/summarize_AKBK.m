@@ -15,7 +15,7 @@ function summarize_AKBK
 subjnums = {'AB156','AB185','AB186','AB188','AB189','AB190','AB191','AB192','AB193','AB194'};
 phasekeys = {'RHC','RTO','LHC','LTO'};
 
-withinall = [];
+withinall = []; 
 withinall_ss = [];
 withinall_t = [];
 
