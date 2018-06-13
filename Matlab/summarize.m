@@ -28,7 +28,7 @@ delay = 0;
 
 % Specify whether to save the error rates combined across all subjects for
 % the specified delay
-savefile = 0;
+savefile = 1;
 
 close all
 
@@ -40,10 +40,11 @@ set(0,'DefaultAxesFontName', 'Palatino Linotype')
 % 88-116 SRC
 % 117 Truth
 
-for i = 1:length(subjnums)
+for i = 1:10
+% for i = 1:length(subjnums)
     disp(['Subject: ',subjnums{i}])
     % This should reflect the output of the Jupyter notebook
-    load([subjnums{i},'_WithinSubjectResults_',num2str(delay),'Delay_ModeSpecific_AllSensorsClassifiers_10Fold_Redo.mat']);
+    load([subjnums{i},'_WithinSubjectResults_',num2str(delay),'Delay_ModeSpecific_LOO_040218TD.mat']);
     eval(['RHC = ',subjnums{i},'.RHC;']);
     eval(['RTO = ',subjnums{i},'.RTO;']);
     eval(['LHC = ',subjnums{i},'.LHC;']);
@@ -82,12 +83,7 @@ for i = 1:length(subjnums)
     ssinds = find(ss_or_t == 1);
     tinds = find(ss_or_t == 0);
     
-%     hc_ss = confusionmat(withintemp(intersect(hcinds,ssinds),117),withintemp(intersect(hcinds,ssinds),7));
-%     hc_t = confusionmat(withintemp(intersect(hcinds,tinds),117),withintemp(intersect(hcinds,tinds),7));
-%     to_ss = confusionmat(withintemp(intersect(toinds,ssinds),117),withintemp(intersect(toinds,ssinds),7));
-%     to_t = confusionmat(withintemp(intersect(toinds,tinds),117),withintemp(intersect(toinds,tinds),7));
-    
-    % Iterate across classifiers (there are 29 sensor sets)
+    % Iterate across classifiers (there are 33 sensor sets)
     for classifier = 1:33:132
         classifiercount = classifiercount + 1;
         disp(['Classifier: ',num2str(classifiercount)]);
@@ -96,44 +92,15 @@ for i = 1:length(subjnums)
         % (for labeling classifier)
         headershift = 1;
         
-        withinclassifiertemp = withintemp(:,[classifier:classifier+28 117]);
+        withinclassifiertemp = withintemp(:,[classifier:classifier+32 133]);
         
         % Gets error rates for each modality(columns)/classifier(rows)
         for sensorcombo = 1:33
             [within_overall, within_ss, within_t] = calcerrorrate(withinclassifiertemp(:,34),withinclassifiertemp(:,sensorcombo),ssinds,tinds);
             withinerror{classifiercount+headershift,sensorcombo+headershift}(i) = within_overall;
-            withinsserror{classifiercount+headershift,sensorcombo+headershift}(i) = within_overall;
-            withinterror{classifiercount+headershift,sensorcombo+headershift}(i) = within_overall;
+            withinsserror{classifiercount+headershift,sensorcombo+headershift}(i) = within_ss;
+            withinterror{classifiercount+headershift,sensorcombo+headershift}(i) = within_t;
         end
-%         [withinerror{classifiercount+headershift,1+headershift}(i),withinsserror{classifiercount+headershift,1+headershift}(i),withinterror{classifiercount+headershift,1+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,1),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,2+headershift}(i),withinsserror{classifiercount+headershift,2+headershift}(i),withinterror{classifiercount+headershift,2+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,2),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,3+headershift}(i),withinsserror{classifiercount+headershift,3+headershift}(i),withinterror{classifiercount+headershift,3+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,3),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,4+headershift}(i),withinsserror{classifiercount+headershift,4+headershift}(i),withinterror{classifiercount+headershift,4+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,4),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,5+headershift}(i),withinsserror{classifiercount+headershift,5+headershift}(i),withinterror{classifiercount+headershift,5+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,5),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,6+headershift}(i),withinsserror{classifiercount+headershift,6+headershift}(i),withinterror{classifiercount+headershift,6+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,6),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,7+headershift}(i),withinsserror{classifiercount+headershift,7+headershift}(i),withinterror{classifiercount+headershift,7+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,7),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,8+headershift}(i),withinsserror{classifiercount+headershift,8+headershift}(i),withinterror{classifiercount+headershift,8+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,8),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,9+headershift}(i),withinsserror{classifiercount+headershift,9+headershift}(i),withinterror{classifiercount+headershift,9+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,9),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,10+headershift}(i),withinsserror{classifiercount+headershift,10+headershift}(i),withinterror{classifiercount+headershift,10+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,10),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,11+headershift}(i),withinsserror{classifiercount+headershift,11+headershift}(i),withinterror{classifiercount+headershift,11+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,11),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,12+headershift}(i),withinsserror{classifiercount+headershift,12+headershift}(i),withinterror{classifiercount+headershift,12+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,12),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,13+headershift}(i),withinsserror{classifiercount+headershift,13+headershift}(i),withinterror{classifiercount+headershift,13+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,13),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,14+headershift}(i),withinsserror{classifiercount+headershift,14+headershift}(i),withinterror{classifiercount+headershift,14+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,14),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,15+headershift}(i),withinsserror{classifiercount+headershift,15+headershift}(i),withinterror{classifiercount+headershift,15+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,15),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,16+headershift}(i),withinsserror{classifiercount+headershift,16+headershift}(i),withinterror{classifiercount+headershift,16+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,16),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,17+headershift}(i),withinsserror{classifiercount+headershift,17+headershift}(i),withinterror{classifiercount+headershift,17+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,17),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,18+headershift}(i),withinsserror{classifiercount+headershift,18+headershift}(i),withinterror{classifiercount+headershift,18+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,18),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,19+headershift}(i),withinsserror{classifiercount+headershift,19+headershift}(i),withinterror{classifiercount+headershift,19+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,19),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,20+headershift}(i),withinsserror{classifiercount+headershift,20+headershift}(i),withinterror{classifiercount+headershift,20+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,20),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,21+headershift}(i),withinsserror{classifiercount+headershift,21+headershift}(i),withinterror{classifiercount+headershift,21+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,21),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,22+headershift}(i),withinsserror{classifiercount+headershift,22+headershift}(i),withinterror{classifiercount+headershift,22+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,22),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,23+headershift}(i),withinsserror{classifiercount+headershift,23+headershift}(i),withinterror{classifiercount+headershift,23+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,23),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,24+headershift}(i),withinsserror{classifiercount+headershift,24+headershift}(i),withinterror{classifiercount+headershift,24+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,24),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,25+headershift}(i),withinsserror{classifiercount+headershift,25+headershift}(i),withinterror{classifiercount+headershift,25+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,25),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,26+headershift}(i),withinsserror{classifiercount+headershift,26+headershift}(i),withinterror{classifiercount+headershift,26+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,26),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,27+headershift}(i),withinsserror{classifiercount+headershift,27+headershift}(i),withinterror{classifiercount+headershift,27+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,27),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,28+headershift}(i),withinsserror{classifiercount+headershift,28+headershift}(i),withinterror{classifiercount+headershift,28+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,28),ssinds,tinds);
-%         [withinerror{classifiercount+headershift,29+headershift}(i),withinsserror{classifiercount+headershift,29+headershift}(i),withinterror{classifiercount+headershift,29+headershift}(i)] = calcerrorrate(withinclassifiertemp(:,30),withinclassifiertemp(:,29),ssinds,tinds);
     end
     % Save predictions across subjects
     withinall = [withinall; withintemp];
@@ -156,7 +123,7 @@ withinterror(1,2:34) = modalityheader;
 
 % Save summarized error rates, if specified
 if savefile 
-    save(['AllSubs_',num2str(delay),'Delay_ErrorRates_032618.mat'],'withinerror','withinsserror','withinterror');
+    save(['AllSubs_',num2str(delay),'Delay_ErrorRates_040218TD.mat'],'withinerror','withinsserror','withinterror');
 end
 
 % Calculate mean and SEM across subjects for each modality/classifier
@@ -275,18 +242,28 @@ withinbarerr_single = reshape(withinbarerr(1,1:9),3,3);
 withinbar_fused = withinbar(1:3,10:12)';
 withinbarerr_fused = withinbarerr(1:3,10:12)';
 
+% Overall (Table 1A)
+A_MEAN = [reshape(LDA_withinmean,[3,4])'; SVM_withinmean(end-2:end); ANN_withinmean(end-2:end)];
+A_SEM = [reshape(LDA_withinstd,[3,4])'; SVM_withinstd(end-2:end); ANN_withinstd(end-2:end)]/sqrt(10);
+
+% SS (Table 1B)
+B_MEAN = [reshape(LDA_withinssmean,[3,4])'; SVM_withinssmean(end-2:end); ANN_withinssmean(end-2:end)];
+B_SEM = [reshape(LDA_withinssstd,[3,4])'; SVM_withinssstd(end-2:end); ANN_withinssstd(end-2:end)]/sqrt(10);
+
+% Trans (Table 1C)
+C_MEAN = [reshape(LDA_withintmean,[3,4])'; SVM_withintmean(end-2:end); ANN_withintmean(end-2:end)];
+C_SEM = [reshape(LDA_withintstd,[3,4])'; SVM_withintstd(end-2:end); ANN_withintstd(end-2:end)]/sqrt(10);
+
 % Make bar plots
 [~,~,singlebar_handles] = errorbar_groups(withinbar_single,withinbarerr_single,'bar_colors',[128 128 255; 0 0 255; 0 0 128; 128 255 128; 0 255 0; 0 128 0; 255 128 128; 255 0 0; 128 0 0]/255,'bar_names',{'EMG','GONIO','IMU'},'bar_width',0.75,'errorbar_width',1.5,'optional_bar_arguments',{'LineWidth',1.5},...
     'optional_errorbar_arguments',{'LineStyle','none','Marker','none','LineWidth',2})
 ylabel('Overall error (%)');
 set(gca,'FontSize',18,'FontWeight','bold');
-legend({'Ipsilateral','Contralateral','Bilateral'},'Location','northoutside','Orientation','horizontal')
 
 [~,~,fusedbar_handles] = errorbar_groups(withinbar_fused,withinbarerr_fused,'bar_colors',[0.8 0.8 0.8; 0.5 0.5 0.5; 0.2 0.2 0.2; 0.8 0.8 0.8; 0.5 0.5 0.5; 0.2 0.2 0.2; 0.8 0.8 0.8; 0.5 0.5 0.5; 0.2 0.2 0.2;],'bar_names',{'LDA','SVM','ANN'},'bar_width',0.75,'errorbar_width',1.5,'optional_bar_arguments',{'LineWidth',1.5},...
     'optional_errorbar_arguments',{'LineStyle','none','Marker','none','LineWidth',2})
 ylabel('Overall error (%)');
 set(gca,'FontSize',18,'FontWeight','bold');
-legend({'Ipsilateral','Contralateral','Bilateral'},'Location','northoutside','Orientation','horizontal')
 end
 
 % Function computes overall, steady-state, and transitional error rates
